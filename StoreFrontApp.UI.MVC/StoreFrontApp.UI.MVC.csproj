@@ -42,4 +42,8 @@
     <Folder Include="wwwroot\_Archive\fonts\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StoreFrontApp.DATA.EF\StoreFrontApp.DATA.EF.csproj" />
+  </ItemGroup>
+
 </Project>
