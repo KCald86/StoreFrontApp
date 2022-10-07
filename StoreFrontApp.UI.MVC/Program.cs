@@ -2,8 +2,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using StoreFrontApp.DATA.EF.Models;
 using StoreFrontApp.UI.MVC.Data;
-using StoreFrontApp.UI.MVC.Models;
+//using StoreFrontApp.UI.MVC.Models.delete;
 using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);

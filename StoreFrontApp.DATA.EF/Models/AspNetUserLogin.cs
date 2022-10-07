@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace StoreFrontApp.UI.MVC.Models
+namespace StoreFrontApp.DATA.EF.Models
 {
     public partial class AspNetUserLogin
     {
