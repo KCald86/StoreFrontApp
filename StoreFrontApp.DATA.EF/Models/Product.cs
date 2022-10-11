@@ -8,6 +8,7 @@ namespace StoreFrontApp.DATA.EF.Models
         public Product()
         {
             InventoryToProducts = new HashSet<InventoryToProduct>();
+            OrderProducts = new HashSet<OrderProduct>();
         }
 
         public int ProductId { get; set; }
@@ -23,5 +24,6 @@ namespace StoreFrontApp.DATA.EF.Models
         public virtual Category Category { get; set; } = null!;
         public virtual Season? Season { get; set; }
         public virtual ICollection<InventoryToProduct> InventoryToProducts { get; set; }
+        public virtual ICollection<OrderProduct> OrderProducts { get; set; }
     }
 }

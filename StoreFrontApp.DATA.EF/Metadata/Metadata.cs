@@ -11,6 +11,7 @@ namespace StoreFrontApp.DATA.EF.Models//Metadata
     //{
     //}
 
+    #region Category
     public class CategoryMetadata
     {
         public int CategoryId { get; set; }
@@ -26,7 +27,9 @@ namespace StoreFrontApp.DATA.EF.Models//Metadata
         [DisplayFormat(NullDisplayText = "[N/A]")]
         public string? CategoryDescription { get; set; }
     }//end CatMD
+    #endregion
 
+    #region Season
     public class SeasonMetadata
     {
         public int SeasonId { get; set; }
@@ -40,7 +43,9 @@ namespace StoreFrontApp.DATA.EF.Models//Metadata
         [Required(ErrorMessage = "Description is required")]
         public string SeasonDescription { get; set; } = null!;
     }
+    #endregion
 
+    #region Supplier
     public class SupplierMetadata
     {
         public int SupplierId { get; set; }
@@ -87,7 +92,9 @@ namespace StoreFrontApp.DATA.EF.Models//Metadata
         [DisplayFormat(NullDisplayText = "[N/A]")]
         public string? Phone { get; set; }
     }
+    #endregion
 
+    #region Inventory
     public class InventoryMetadata
     {
         public int InventoryId { get; set; }
@@ -122,7 +129,9 @@ namespace StoreFrontApp.DATA.EF.Models//Metadata
         [Range(0, int.MaxValue)]
         public int? SupplierId { get; set; }
     }
+    #endregion
 
+    #region InventoryToProduct
     public class InventoryToProductMetadata
     {
         public int InvToProdId { get; set; }
@@ -135,7 +144,9 @@ namespace StoreFrontApp.DATA.EF.Models//Metadata
         [Range (0, int.MaxValue)]
         public int ProductId { get; set; }
     }
+    #endregion
 
+    #region Product
     public class ProductMetadata
     {
         public int ProductId { get; set; }
@@ -174,6 +185,68 @@ namespace StoreFrontApp.DATA.EF.Models//Metadata
         [DisplayFormat(NullDisplayText = "[N/A]")]
         public string? ProductImage { get; set; }
     }
+    #endregion
 
+    #region Order
+    public class OrderMetadata
+    {
+        //nothing needed - this is a PK
+        public int OrderId { get; set; }
+
+        //no metadata needed for FKs - as they are represented in a View by a dropdown list
+        public string UserId { get; set; } = null!;
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]//0:d => MM/dd/yyyy
+        [Display(Name = "Order Date")]
+        [Required]
+        public DateTime OrderDate { get; set; }
+
+        [StringLength(100)]
+        [Display(Name = "Ship To")]
+        [Required]
+        public string ShipToName { get; set; } = null!;
+
+        [StringLength(50)]
+        [Display(Name = "City")]
+        [Required]
+        public string ShipCity { get; set; } = null!;
+
+        [StringLength(2)]
+        [Display(Name = "State")]
+        public string? ShipState { get; set; }
+
+        [StringLength(5)]
+        [Display(Name = "Zip")]
+        [Required]
+        [DataType(DataType.PostalCode)]
+        public string ShipZip { get; set; } = null!;
+    }
+    #endregion
+
+    #region UserDetail
+    public class UserDetailMetadata
+    {
+        public string UserId { get; set; } = null!;
+        [StringLength(50)]
+        [Display(Name = "First Name")]
+        [Required]
+        public string FirstName { get; set; } = null!;
+        [StringLength(50)]
+        [Display(Name = "Last Name")]
+        [Required]
+        public string LastName { get; set; } = null!;
+        [StringLength(150)]
+        public string? Address { get; set; }
+        [StringLength(50)]
+        public string? City { get; set; }
+        [StringLength(2)]
+        public string? State { get; set; }
+        [StringLength(5)]
+        [DataType(DataType.PostalCode)]
+        public string? Zip { get; set; }
+        [StringLength(24)]
+        [DataType(DataType.PhoneNumber)]
+        public string? Phone { get; set; }
+    }
+    #endregion
 
 }

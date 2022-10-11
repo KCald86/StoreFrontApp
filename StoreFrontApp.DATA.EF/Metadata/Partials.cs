@@ -29,4 +29,13 @@ namespace StoreFrontApp.DATA.EF.Models//Metadata
     [ModelMetadataType(typeof(ProductMetadata))]
     public partial class Product { }
 
+    [ModelMetadataType(typeof(OrderMetadata))]
+    public partial class Order { }
+
+    [ModelMetadataType(typeof(UserDetailMetadata))]
+    public partial class UserDetail
+    {
+        public string FullName { get { return $"{FirstName} {LastName}"; } }
+    }
+
 }

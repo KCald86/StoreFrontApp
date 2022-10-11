@@ -1,0 +1,93 @@
+﻿@model IEnumerable<StoreFrontApp.DATA.EF.Models.Product>
+
+@{
+    ViewData["Title"] = "Order Menu";
+}
+
+@*<h1>Index</h1>*@
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductPrice)
+            </th>
+            @*<th>
+            @Html.DisplayNameFor(model => model.ProductDescription)
+            </th>
+            <th>
+            @Html.DisplayNameFor(model => model.IsInStock)
+            </th>
+            <th>
+            @Html.DisplayNameFor(model => model.IsDiscontinued)*@
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductImage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Season)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.ProductId">
+                        @Html.DisplayFor(modelItem => item.ProductName)
+                    </a>
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductPrice)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.ProductDescription)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.IsInStock)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.IsDiscontinued)
+                </td>*@
+                <td>
+                    @*@Html.DisplayFor(modelItem => item.ProductImage)*@
+                    <img src="~/images/t_@item.ProductImage" class="img-fluid" alt="@item.ProductDescription" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Season.SeasonDescription)
+                </td>
+                <td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> <span>|</span>
+
+                        if (item.IsDiscontinued == false)
+                        {
+                            <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                        }
+                        else
+                        {
+                            <a disabled="true" class="text-danger" style="text-decoration: line-through;" title="Can't delete - @item.ProductName is a current product">Delete</a>
+                        }
+
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

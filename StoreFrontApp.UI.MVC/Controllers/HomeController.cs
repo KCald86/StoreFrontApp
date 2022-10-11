@@ -10,19 +10,13 @@ namespace StoreFrontApp.UI.MVC.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        //public HomeController(ILogger<HomeController> logger)
-        //{
-        //    _logger = logger;
-        //}
-
         private readonly IConfiguration _config;
 
-        public HomeController(IConfiguration config)
+        public HomeController(ILogger<HomeController> logger, IConfiguration config)
         {
+            _logger = logger;
             _config = config;
         }
-
 
         public IActionResult Index()
         {
