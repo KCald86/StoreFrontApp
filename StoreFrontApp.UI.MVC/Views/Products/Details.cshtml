@@ -1,0 +1,132 @@
+﻿@model StoreFrontApp.DATA.EF.Models.Product
+
+@{
+    ViewData["Title"] =  Model.ProductName + " Details";
+}
+
+@*<h1>Details</h1>*@
+
+<section class="product_section layout_padding gray-section pb-4 pt-4">
+    <div class="container">
+        <div class="heading_container heading_center">
+            <h2>
+                @Model.ProductName <span>Details</span>
+            </h2>
+        </div>
+    </div>
+</section>
+
+<div class="row mb-3">
+    <div class="col-md-6 offset-0 offset-md-3 text-center">
+        <img src="~/images/@Model.ProductImage" alt="@Model.ProductName" longdesc="@Model.ProductDescription" class="img-fluid" />
+        <p class="text-info mt-3">
+            @Html.DisplayFor(model => model.ProductDescription)
+        </p>
+    </div>
+    <div class="offset-0 offset-md-3 col-md-3">
+        <p>
+            <strong>
+                @Html.DisplayNameFor(model => model.ProductPrice):
+            </strong>
+            @Html.DisplayFor(model => model.ProductPrice)
+        </p>
+       @* <p>
+            <strong>
+                @Html.DisplayNameFor(model => model.UnitsInStock):
+            </strong>
+            @Html.DisplayFor(model => model.UnitsInStock)
+        </p>
+        <p>
+            <strong>
+                @Html.DisplayNameFor(model => model.UnitsOnOrder):
+            </strong>
+            @Html.DisplayFor(model => model.UnitsOnOrder)
+        </p>*@
+    </div>
+    <div class="offset-0 offset-md-1 col-md-5">
+        <p>
+            <strong>
+                @Html.DisplayNameFor(model => model.IsDiscontinued):
+            </strong>
+            @{
+                string lineText = Model.IsDiscontinued ? "Yes" : "No";
+            }
+            <span>@lineText</span>
+        </p>
+        <p>
+            <strong>
+                @Html.DisplayNameFor(model => model.Category.CategoryName):
+            </strong>
+            @Html.DisplayFor(model => model.Category.CategoryName)
+        </p>
+       @* <p>
+            <strong>
+                @Html.DisplayNameFor(model => model.Supplier.SupplierName):
+            </strong>
+            @Html.DisplayFor(model => model.Supplier.SupplierName)
+        </p>*@
+    </div>
+    <div class="col-12 col-md-6 offset-md-3">
+        <a asp-action="Index" class="btn btn-primary w-100 d-inline-block">Back to Gadgets</a>
+    </div>
+</div>
+
+@*<div>
+    <h4>Product</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ProductName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ProductName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ProductPrice)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ProductPrice)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ProductDescription)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ProductDescription)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsInStock)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsInStock)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsDiscontinued)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsDiscontinued)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ProductImage)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ProductImage)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Category)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Category.CategoryName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Season)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Season.SeasonDescription)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.ProductId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
+*@
