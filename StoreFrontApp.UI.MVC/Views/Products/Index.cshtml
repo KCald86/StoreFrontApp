@@ -109,6 +109,7 @@
                     @Html.DisplayFor(modelItem => item.Season.SeasonDescription)
                 </td>
                 <td>
+                    <a asp-action="Details" asp-route-id="@item.ProductId">Details</a>
                     @if (User.IsInRole("Admin"))
                     {
                         <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> <span>|</span>
