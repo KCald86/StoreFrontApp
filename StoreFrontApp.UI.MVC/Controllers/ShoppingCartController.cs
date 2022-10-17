@@ -157,7 +157,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
                 HttpContext.Session.SetString("cart", jsonCart);
             }
 
-            // Send the user back to the shopping cart indes
+            // Send the user back to the shopping cart index
             return RedirectToAction("Index");
         }
 
@@ -239,7 +239,29 @@ namespace StoreFrontApp.UI.MVC.Controllers
 
                 //ONLY need to add items to an existing entity (here -> the order 'o') if the items are a related record (like the OrderProduct here)
                 o.OrderProducts.Add(op);
+
+                // Linking and decrementing inventory as products are ordered
+                var inventoryProduct = _context.InventoryToProducts.Where(x => x.ProductId == item.Value.CartProd.ProductId).ToList();//
+                foreach (var ip in inventoryProduct)
+                {
+                var inventory = _context.Inventories.Find(ip.InventoryId);
+                    if (inventory.UnitsInStock > 0)
+                    {
+                        inventory.UnitsInStock--;
+                        _context.Update(inventory);
+                    }
+                    if (inventory.UnitsInStock == 0)
+                    {
+                        var product = _context.Products.Find(item.Value.CartProd.ProductId);
+                        product.IsInStock = false;
+                        _context.Update(product);
+                    }
+                }
+
             }
+
+
+
 
             //Save changes to the DB
             _context.SaveChanges();
@@ -250,6 +272,5 @@ namespace StoreFrontApp.UI.MVC.Controllers
             return RedirectToAction("Index", "Orders");
 
         }
-
     }
 }
