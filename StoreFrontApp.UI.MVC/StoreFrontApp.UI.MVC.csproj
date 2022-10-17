@@ -35,6 +35,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
     <PackageReference Include="MimeKit" Version="3.4.1" />
     <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
+    <PackageReference Include="x.pagedlist.mvc.core" Version="8.4.3" />
   </ItemGroup>
 
   <ItemGroup>

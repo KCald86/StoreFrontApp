@@ -33,6 +33,7 @@
                         <th>Product</th>
                         <th class="text-center">Quantity</th>
                         <th>Name</th>
+                        @*<th>Customize</th>*@
                         <th>Price</th>
                         <th>Total</th>
                         <th></th>
@@ -58,6 +59,14 @@
                             <td>
                                 @item.Value.CartProd.ProductName
                             </td>
+                           @* <td>
+                                @foreach (var item in Model.InventoryToProducts)//move to cart get some check boxes
+                                {
+                                    <h1>
+                                        @item.Inventory.InventoryName
+                                    </h1>
+                                }
+                            </td>*@
                             <td>
                                 @*
                         Using the DisplayFor() helper method so we can see some currency formatting
@@ -89,7 +98,16 @@
 
             <div class="alert alert-success text-center">
                 <p>
-                    Your total before taxes and shipping is [Cart Total].
+                    Your total before taxes and shipping is @{
+                        decimal orderTotal = 0;
+                        @foreach (var item in Model)
+                        {
+                            orderTotal += item.Value.CartProd.ProductPrice * item.Value.Qty;
+                            @string.Format($"{orderTotal:c}")
+                        }
+
+                    }
+                    [Cart Total].
                 </p>
 
                 @if (User.Identity.IsAuthenticated)@*Check to see if a user is logged in*@
