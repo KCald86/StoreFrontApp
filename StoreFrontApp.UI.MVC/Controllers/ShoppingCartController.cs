@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StoreFrontApp.DATA.EF.Models;
@@ -74,9 +75,67 @@ namespace StoreFrontApp.UI.MVC.Controllers
                 shoppingCart = JsonConvert.DeserializeObject<Dictionary<int, CartItemViewModel>>(sessionCart);
             }
 
+
             // no matter what, return the collection to the View
             return View(shoppingCart);
         }
+
+        //JD: Added to accept checkboxes from form
+        public async Task<IActionResult> CustomizeProduct(int[]? inventory, int productId)
+        {
+            //Local cart instance
+            Dictionary<int, CartItemViewModel> shoppingCart = null;
+
+            //retrieve the session instance of the cart to see if it exists yet
+            var sessionCart = HttpContext.Session.GetString("cart");
+
+            // if the session is null, instantiate the local shopping cart
+            if (sessionCart == null)
+            {
+                shoppingCart = new Dictionary<int, CartItemViewModel>();
+            }
+
+            //otherwise, retrieve and conver the contents from the session cart
+            //here, we are taking the JSON that is in the sessionCart, and converting it into C# for our local instance shoppingCart
+            else
+            {
+                shoppingCart = JsonConvert.DeserializeObject<Dictionary<int, CartItemViewModel>>(sessionCart);
+                // Deserialize is just a fancy term for 'convert' -- it is converting JSON into C#
+            }
+
+            // Retrieve the product for the cart from the DB
+            Product product = _context.Products.Find(productId);
+
+            // Create the CartItemViewModel for the product being added
+            CartItemViewModel civm = new CartItemViewModel(1, product);
+
+            //JD: Added to track the ids alongside the cart item
+            foreach (var id in inventory)
+            {
+                civm.InventoryIds.Add(id);
+            }
+
+            // If the product was already in the cart, increase the quantity by 1
+            // Otherwise, add the new item into the local shopping cart
+            if (shoppingCart.ContainsKey(product.ProductId))
+            {
+                //update qty
+                shoppingCart[product.ProductId].Qty++;
+            }
+            else
+            {
+                shoppingCart.Add(product.ProductId, civm);
+            }
+
+            // update the session version of the cart
+            // take the local copy, serialize (box it up) as JSON
+            // then store that JSON value in session
+            string jsonCart = JsonConvert.SerializeObject(shoppingCart);
+            HttpContext.Session.SetString("cart", jsonCart);
+
+            return RedirectToAction("Index");
+        }
+
 
         public IActionResult AddToCart(int id)
         {
@@ -161,6 +220,21 @@ namespace StoreFrontApp.UI.MVC.Controllers
             return RedirectToAction("Index");
         }
 
+        //
+        public IActionResult ViewCart(int productId, int qty)
+        {
+            var sessionCart = HttpContext.Session.GetString("cart");
+
+            Dictionary<int, CartItemViewModel> shoppingCart = JsonConvert.DeserializeObject<Dictionary<int, CartItemViewModel>>(sessionCart);
+
+            shoppingCart[productId].Qty = qty;
+
+            string jsonCart = JsonConvert.SerializeObject(shoppingCart);
+            HttpContext.Session.SetString("cart", jsonCart);
+
+            return View(shoppingCart.Count);
+        }
+
         public IActionResult UpdateCart(int productId, int qty)
         {
             // retrieve the cart
@@ -241,10 +315,17 @@ namespace StoreFrontApp.UI.MVC.Controllers
                 o.OrderProducts.Add(op);
 
                 // Linking and decrementing inventory as products are ordered
-                var inventoryProduct = _context.InventoryToProducts.Where(x => x.ProductId == item.Value.CartProd.ProductId).ToList();//
+                //JD: The query below now returns InventoryToProduct records that match with the IDs of the inventory items selected from
+                //the details view when customizing with checkboxes
+                var inventoryProduct = _context.InventoryToProducts.Where(x => x.ProductId == item.Value.CartProd.ProductId
+                && item.Value.InventoryIds.Any(y => x.InventoryId == y)
+                ).ToList();
+
+
+
                 foreach (var ip in inventoryProduct)
                 {
-                var inventory = _context.Inventories.Find(ip.InventoryId);
+                    var inventory = _context.Inventories.Find(ip.InventoryId);
                     if (inventory.UnitsInStock > 0)
                     {
                         inventory.UnitsInStock--;

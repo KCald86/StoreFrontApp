@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using StoreFrontApp.DATA.EF.Models;
 
 namespace StoreFrontApp.UI.MVC.Controllers
 {
+    
     public class OrdersController : Controller
     {
         private readonly StoreFrontAppContext _context;
@@ -19,6 +21,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         }
 
         // GET: Orders
+        // When I add an [Authorize(Roles = "User") it locks both my admin and Users out of the Orders View
         public async Task<IActionResult> Index()
         {
             var storeFrontAppContext = _context.Orders.Include(o => o.User);
@@ -26,6 +29,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         }
 
         // GET: Orders/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Orders == null)
@@ -45,6 +49,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         }
 
         // GET: Orders/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["UserId"] = new SelectList(_context.UserDetails, "UserId", "UserId");
@@ -69,6 +74,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         }
 
         // GET: Orders/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Orders == null)
@@ -90,6 +96,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("OrderId,UserId,OrderDate,ShipToName,ShipCity,ShipState,ShipZip")] Order order)
         {
             if (id != order.OrderId)
@@ -122,6 +129,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         }
 
         // GET: Orders/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Orders == null)
@@ -143,6 +151,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         // POST: Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Orders == null)

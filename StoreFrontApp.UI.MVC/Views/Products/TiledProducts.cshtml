@@ -11,12 +11,27 @@
     ViewData["Title"] = "Order Menu";
 }
 
+<div class="all-title-box">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2>Order Food</h2>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active">Order Food</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <section class="product_section layout_padding gray-section pb-4 pt-4">
     <div class="container">
         <div class="heading_container heading_center">
-            <h2>
+            @*<h2>
                 Order <span>Food</span>
-            </h2>
+            </h2>*@
             <p align="center">
 
                 @if (User.IsInRole("Admin"))
@@ -27,7 +42,9 @@
                         </span>
                 }
 
-                <a asp-action="Index">Table View</a>
+                <button class="btn btn-secondary">
+                    <a asp-action="Index">Menu List</a>
+                </button>
 
             </p>
         </div>
@@ -57,7 +74,9 @@
                         The 'name' attribute of this textbox MUST match the parameter name in the TiledProducts() action
                     *@
                     <input type="text" name="searchTerm" placeholder="Search products" class="form-control text-center" value="@ViewBag.SearchTerm" />
-                    <input type="submit" value="Apply Filters" class="btn btn-primary text-center w-50 d-block" />
+                    <div class="align-content-center">
+                        <input type="submit" value="Apply Filters" class="btn btn-primary text-center w-50 d-block" />
+                    </div>
                 </form>
 
                 @if (ViewBag.NbrResults != null)

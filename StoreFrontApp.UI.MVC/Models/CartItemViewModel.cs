@@ -11,12 +11,17 @@ namespace StoreFrontApp.UI.MVC.Models
         //complex data types are classes that can hold multiple values
         //vs primitive data types, which hold a single value
 
+        //Added to track the inventory (checkboxes) when customizing the product for the cart
+        // - this will be used later when submitting an order and updating the inventory table
+        public List<int> InventoryIds { get; set; }
+
         public CartItemViewModel() { }
 
         public CartItemViewModel(int qty, Product product)
         {
             Qty = qty;
             CartProd = product;
+            InventoryIds = new List<int>();
         }
         //CartItemViewModel civm = new CartItemViewModel(1, new Product() { });
     }

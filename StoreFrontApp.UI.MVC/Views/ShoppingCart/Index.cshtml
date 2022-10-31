@@ -4,7 +4,8 @@
     ViewData["Title"] = "Cart";
 }
 
-<section class="product_section layout_padding">
+<!-- Start Cart  -->
+<div class="cart-box-main">
     <div class="container">
         <div class="heading_container heading_center">
             <h2>
@@ -12,7 +13,7 @@
             </h2>
 
             <p allign="center">
-                <a asp-action="TiledProducts" asp-controller="Products" class="btn btn-info">
+                <a asp-action="TiledProducts" asp-controller="Products" class="btn btn-primary">
                     Back to Shopping
                 </a>
             </p>
@@ -27,110 +28,120 @@
         }
         else
         {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th class="text-center">Quantity</th>
-                        <th>Name</th>
-                        @*<th>Customize</th>*@
-                        <th>Price</th>
-                        <th>Total</th>
-                        <th></th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                <img src="~/images/t_@item.Value.CartProd.ProductImage" alt="@item.Value.CartProd.ProductName" />
-                            </td>
-                            <td>
-                                @*@item.Value.Qty*@
-                                <form asp-action="UpdateCart">
-                                    <input type="hidden" name="productId" value="@item.Value.CartProd.ProductId" />
-                                    <input type="number" min="1" max="50"
-                                   name="qty" value="@item.Value.Qty" class="form-control d-block mx-auto w-50 text-center" />
-                                    <input type="submit" value="Update Cart" class="btn btn-primary btn-sm" />
-                                </form>
-                            </td>
-                            <td>
-                                @item.Value.CartProd.ProductName
-                            </td>
-                           @* <td>
-                                @foreach (var item in Model.InventoryToProducts)//move to cart get some check boxes
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-main table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th>Name</th>
+                                    @*<th>Customize</th>*@
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
                                 {
-                                    <h1>
-                                        @item.Inventory.InventoryName
-                                    </h1>
+                                    <tr>
+                                        <td>
+                                            <img src="~/images/t_@item.Value.CartProd.ProductImage" alt="@item.Value.CartProd.ProductName" />
+                                        </td>
+                                        <td>
+                                            @*@item.Value.Qty*@
+                                            <form asp-action="UpdateCart">
+                                                <input type="hidden" name="productId" value="@item.Value.CartProd.ProductId" />
+                                                <input type="number" min="1" max="50"
+                                                name="qty" value="@item.Value.Qty" class="form-control d-block mx-auto w-50 text-center" />
+                                                <div class="update-box">
+                                                    <input value="Update Cart" type="submit">
+                                                </div>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            @item.Value.CartProd.ProductName
+                                        </td>
+                                        <td>
+                                            @*
+                                    Using the DisplayFor() helper method so we can see some currency formatting*@
+                                            @Html.DisplayFor(modelItem => item.Value.CartProd.ProductPrice)
+                                            @*@item.Value.CartProd.ProductPrice*@
+                                        </td>
+                                        <td>
+                                            @*[Total goes here]*@
+                                            @{
+                                                // Calculate the line total and display for each cart item
+                                                decimal? lineTotal = item.Value.Qty * item.Value.CartProd.ProductPrice;
+                                            }
+
+                                            @string.Format($"{lineTotal:c}")
+
+                                        </td>
+                                        <td>
+                                            @*[Remove from cart button]*@
+                                            <a asp-action="RemoveFromCart" asp-controller="ShoppingCart"
+                                        asp-route-id="@item.Value.CartProd.ProductId" class="btn btn-danger">
+                                                Remove From Cart
+                                            </a>
+                                        </td>
+                                    </tr>
                                 }
-                            </td>*@
-                            <td>
-                                @*
-                        Using the DisplayFor() helper method so we can see some currency formatting
-                        *@
-                                @Html.DisplayFor(modelItem => item.Value.CartProd.ProductPrice)
-                                @*@item.Value.CartProd.ProductPrice*@
-                            </td>
-                            <td>
-                                @*[Total goes here]*@
-                                @{
-                                    // Calculate the line total and display for each cart item
-                                    decimal? lineTotal = item.Value.Qty * item.Value.CartProd.ProductPrice;
-                                }
-
-                                @string.Format($"{lineTotal:c}")
-
-                            </td>
-                            <td>
-                                @*[Remove from cart button]*@
-                                <a asp-action="RemoveFromCart" asp-controller="ShoppingCart"
-                           asp-route-id="@item.Value.CartProd.ProductId" class="btn btn-danger">
-                                    Remove From Cart
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
-            <div class="alert alert-success text-center">
-                <p>
-                    Your total before taxes and shipping is @{
-                        decimal orderTotal = 0;
-                        @foreach (var item in Model)
-                        {
-                            orderTotal += item.Value.CartProd.ProductPrice * item.Value.Qty;
-                            @string.Format($"{orderTotal:c}")
-                        }
-
-                    }
-                    [Cart Total].
-                </p>
-
-                @if (User.Identity.IsAuthenticated)@*Check to see if a user is logged in*@
-                {
-                    <p>
-                        <a asp-action="SubmitOrder" class="btn btn-primary">
-                            Submit Order
-                        </a>
-                    </p>
-                }
-                else
-                {
-                    <p>To place this order you must be logged in. You can log in <a asp-area="Identity" asp-page="/Account/Login">here</a></p>
-                    <button disabled="disabled" class="btn btn-primary">Submit Order</button>
-                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
+            <div class="row my-5">
+                <div class="col-lg-8 col-sm-12"></div>
+                <div class="col-lg-4 col-sm-12">
+                    <div class="order-box">
+                        <h3>Order summary</h3>
+                        <div class="d-flex">
+                            <h4>Sub Total</h4>
+                            <div class="ml-auto font-weight-bold"> 
+                                @{
+                                    decimal orderTotal = 0;
+                                    @foreach (var item in Model)
+                                    {
+                                        orderTotal += item.Value.CartProd.ProductPrice * item.Value.Qty;
+                                    }
+                                    @string.Format($"{orderTotal:c}")
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    @*<hr>
+                    <div class="d-flex gr-total">
+                        <h5>Grand Total</h5>
+                        <div class="ml-auto h5"> $ 388 </div>
+                    </div>
+                    <hr>*@
+                </div>
+            </div>
 
+            @if (User.Identity.IsAuthenticated) @*Check to see if a user is logged in*@
+            {
+                <div class="col-12 d-flex shopping-box"><a asp-action="SubmitOrder" class="ml-auto btn hvr-hover">Submit Order</a> </div>
+                
+            }
+            else
+            {
+                <p>To place this order you must be logged in. You can log in <a asp-area="Identity" asp-page="/Account/Login">here</a></p>
+                <button disabled="disabled" class="ml-auto btn hvr-hover">Submit Order</button>
+            }
         }
-
-
+        </div>
     </div>
-</section>
+</div>
+<!-- End Cart -->
+
+
+
+
 
 
 

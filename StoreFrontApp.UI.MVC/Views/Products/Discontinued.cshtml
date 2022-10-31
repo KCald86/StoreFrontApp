@@ -1,52 +1,26 @@
 ﻿@model IEnumerable<StoreFrontApp.DATA.EF.Models.Product>
 
 @{
-    ViewData["Title"] = "Online Menu";
+    ViewData["Title"] = "Discontinued Products";
 }
 
-@*  Steps to implement Datatables (for client-side search, filter, & page)
-        1) (_Layout) add the <script> for jQuery.js -- ONLY if it doesn't already exist
-        2) (_Layout) add the <script> for datatables.js (found on the plugin's website - either available from CDN or file download)
-        3) (_Layout) add the <link> for datatables.css (if required - some plugins do not require any CSS)
-        4) (Index) add/modify your HTML to fit the requirements of the plugin
-            - Here, we use Datatables with the default scaffolded <table> from EF - we don't need to make any adjustments
-            to implement the basic datatables functionality
-        5) (Index) call the plugin function from @section Scripts { }
-        6) (optional - CSS or Plugin Function) Customize the plugin - update styles, modifying the default implementation
-*@
+<h1>@ViewData["Title"]</h1>
+
 
 <div class="all-title-box">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <h2>Online Menu</h2>
-                <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                    <li class="breadcrumb-item active">Online Menu</li>
-                </ul>
-            </div>
-        </div>
-
-    </div>
-</div>
-
 <div class="container">
-    <p align="center">
-        @if (User.IsInRole("Admin"))
-        {
+    <div class="row">
+        <div class="col-lg-12">
+            <h2>Discontinued Products</h2>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                <li class="breadcrumb-item active">Discontinued Products</li>
+            </ul>
+        </div>
+    </div>
 
-            <span>
-                <a asp-action="Create">Add A New Product</a> |
-                <a asp-action="Discontinued">Discontinued Products</a> |
-            </span>
-        }
-        <button class="btn btn-secondary">
-            <a asp-action="TiledProducts">Order Here!</a>
-        </button>
-    </p>
 </div>
-
-
+</div>
 
 <table class="table">
     <thead>

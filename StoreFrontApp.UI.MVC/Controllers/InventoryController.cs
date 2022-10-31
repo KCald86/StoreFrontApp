@@ -21,7 +21,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         }
 
         // GET: Inventory
-        [Authorize(Roles = "User")]
+        
         public async Task<IActionResult> Index()
         {
             var storeFrontAppContext = _context.Inventories.Include(i => i.Supplier);
@@ -36,7 +36,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         }
 
         // GET: Inventory/Details/5
-        [Authorize(Roles = "User")]
+        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Inventories == null)
@@ -80,7 +80,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         }
 
         // GET: Inventory/Edit/5
-        [Authorize(Roles = "User")]
+        
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Inventories == null)
@@ -102,7 +102,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "User")]
+        
         public async Task<IActionResult> Edit(int id, [Bind("InventoryId,InventoryName,InventoryDescription,UnitPrice,UnitsInStock,UnitsOnOrder,SupplierId")] Inventory inventory)
         {
             if (id != inventory.InventoryId)

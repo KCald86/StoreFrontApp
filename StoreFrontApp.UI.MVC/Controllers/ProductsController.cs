@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StoreFrontApp.DATA.EF.Models;
+using StoreFrontApp.UI.MVC.Utilities;
+using System.Drawing;
 using X.PagedList;//Paged List - Step 2
 
 namespace StoreFrontApp.UI.MVC.Controllers
@@ -16,10 +18,13 @@ namespace StoreFrontApp.UI.MVC.Controllers
     public class ProductsController : Controller
     {
         private readonly StoreFrontAppContext _context;
+        //added prop below for access to the wwwroot folder
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductsController(StoreFrontAppContext context)
+        public ProductsController(StoreFrontAppContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;//added
         }
 
         // GET: Products
@@ -77,7 +82,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
             var products = _context.Products.Where(p => !p.IsDiscontinued)
                 .Include(p => p.Category)
                 .Include(p => p.Season)
-                .Include(p => p.OrderProducts).ToList() ;
+                .Include(p => p.OrderProducts).ToList();
 
             // DDL - Step 1
             // Note: we copied this line from the existing functionality in Products.Create()
@@ -140,7 +145,8 @@ namespace StoreFrontApp.UI.MVC.Controllers
 
             return View(product);
 
-        }public async Task<IActionResult> Customize(int? id)
+        }
+        public async Task<IActionResult> Customize(int? id)
         {
             if (id == null || _context.Products == null)
             {
@@ -161,6 +167,15 @@ namespace StoreFrontApp.UI.MVC.Controllers
             return View(product);
         }
 
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Discontinued()
+        {
+            var products = _context.Products.Where(p => p.IsDiscontinued)
+
+            .Include(p => p.Category).Include(p => p.OrderProducts);
+            return View(await products.ToListAsync());
+        }
+
         // GET: Products/Create
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
@@ -173,13 +188,71 @@ namespace StoreFrontApp.UI.MVC.Controllers
         // POST: Products/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductName,ProductPrice,ProductDescription,IsInStock,IsDiscontinued,CategoryId,SeasonId,ProductImage")] Product product)
+        public async Task<IActionResult> Create([Bind("ProductId,ProductName,ProductPrice,ProductDescription,IsInStock,IsDiscontinued,CategoryId,SeasonId,ProductImage,Image")] Product product)
         {
             if (ModelState.IsValid)
             {
+                #region File Upload - CREATE
+                //Check to see if a file was uploaded
+                if (product.Image != null)
+                {
+                    //Check the file type 
+                    //- retrieve the extension of the uploaded file
+                    string ext = Path.GetExtension(product.Image.FileName);
+
+                    //- Create a list of valid extensions to check against
+                    string[] validExts = { ".jpeg", ".jpg", ".gif", ".png" };
+
+                    //- verify the uploaded file has an extension matching one of the extensions in the list above
+                    //- AND verify file size will work with our .NET app
+                    if (validExts.Contains(ext.ToLower()) && product.Image.Length < 4_194_303)//underscores don't change the number, they just make it easier to read
+                    {
+                        //Generate a unique filename
+                        product.ProductImage = Guid.NewGuid() + ext;
+
+                        //Save the file to the web server (here, saving to wwwroot/images)
+                        //To access wwwroot, add a property to the controller for the _webHostEnvironment (see the top of this class for our example)
+                        //Retrieve the path to wwwroot
+                        string webRootPath = _webHostEnvironment.WebRootPath;
+                        //variable for the full image path --> this is where we will save the image
+                        string fullImagePath = webRootPath + "/images/";
+
+                        //Create a MemoryStream to read the image into the server memory
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await product.Image.CopyToAsync(memoryStream);//transfer file from the request to server memory
+                            using (var img = Image.FromStream(memoryStream))//add a using statement for the Image class (using System.Drawing)
+                            {
+                                //now, send the image to the ImageUtility for resizing and thumbnail creation
+                                //items needed for the ImageUtility.ResizeImage()
+                                //1) (int) maximum image size
+                                //2) (int) maximum thumbnail image size
+                                //3) (string) full path where the file will be saved
+                                //4) (Image) an image
+                                //5) (string) filename
+                                int maxImageSize = 500;//in pixels
+                                int maxThumbSize = 100;
+
+                                ImageUtility.ResizeImage(fullImagePath, product.ProductImage, img, maxImageSize, maxThumbSize);
+                                //myFile.Save("path/to/folder", "filename"); - how to save something that's NOT an image
+
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    //If no image was uploaded, assign a default filename
+                    //Will also need to download a default image and name it 'noimage.png' -> copy it to the /images folder
+                    product.ProductImage = "noimage.png";
+                }
+
+                #endregion
+
+
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -190,7 +263,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         }
 
         // GET: Products/Edit/5
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Products == null)
@@ -211,10 +284,10 @@ namespace StoreFrontApp.UI.MVC.Controllers
         // POST: Products/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,ProductPrice,ProductDescription,IsInStock,IsDiscontinued,CategoryId,SeasonId,ProductImage")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,ProductPrice,ProductDescription,IsInStock,IsDiscontinued,CategoryId,SeasonId,ProductImage,Image")] Product product)
         {
             if (id != product.ProductId)
             {
@@ -223,6 +296,50 @@ namespace StoreFrontApp.UI.MVC.Controllers
 
             if (ModelState.IsValid)
             {
+                #region EDIT File Upload
+                //retain old image file name so we can delete if a new file was uploaded
+                string oldImageName = product.ProductImage;
+
+                //Check if the user uploaded a file
+                if (product.Image != null)
+                {
+                    //get the file's extension
+                    string ext = Path.GetExtension(product.Image.FileName);
+
+                    //list valid extensions
+                    string[] validExts = { ".jpeg", ".jpg", ".png", ".gif" };
+
+                    //check the file's extension against the list of valid extensions
+                    if (validExts.Contains(ext.ToLower()) && product.Image.Length < 4_194_303)
+                    {
+                        //generate a unique file name
+                        product.ProductImage = Guid.NewGuid() + ext;
+                        //build our file path to save the image
+                        string webRootPath = _webHostEnvironment.WebRootPath;
+                        string fullPath = webRootPath + "/images/";
+
+                        //Delete the old image
+                        if (oldImageName != "noimage.png")
+                        {
+                            ImageUtility.Delete(fullPath, oldImageName);
+                        }
+
+                        //Save the new image to webroot
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await product.Image.CopyToAsync(memoryStream);
+                            using (var img = Image.FromStream(memoryStream))
+                            {
+                                int maxImageSize = 500;
+                                int maxThumbSize = 100;
+                                ImageUtility.ResizeImage(fullPath, product.ProductImage, img, maxImageSize, maxThumbSize);
+                            }
+                        }
+
+                    }
+                }
+                #endregion
+
                 try
                 {
                     _context.Update(product);
@@ -247,6 +364,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         }
 
         // GET: Products/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Products == null)
@@ -269,6 +387,7 @@ namespace StoreFrontApp.UI.MVC.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Products == null)

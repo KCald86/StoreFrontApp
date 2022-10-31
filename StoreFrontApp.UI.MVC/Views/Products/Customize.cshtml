@@ -29,13 +29,19 @@ section class="product_section layout_padding gray-section pb-4 pt-4">
             @Html.DisplayFor(model => model.ProductPrice)
         </p>
 
-        @foreach (var item in Model.InventoryToProducts)//move to cart get some check boxes
-        {
-            <h4>
-                @Html.CheckBox(item.Inventory.InventoryName)
-                @Html.DisplayFor(Model => item.Inventory.InventoryName)
-            </h4>
-        }
+        <form asp-action="CustomizeProduct" asp-controller="ShoppingCart">
+            <input type="hidden" name="productId" value="@Model.ProductId" />
+            @foreach (var item in Model.InventoryToProducts)//move to cart get some check boxes
+            {
+                <h4>
+                    @*@Html.CheckBox(item.Inventory.InventoryName, true)*@
+                    <input type="checkbox" name="inventory" value="@item.Inventory.InventoryId" checked="checked" />
+                    @Html.DisplayFor(Model => item.Inventory.InventoryName)
+                </h4>
+            }
+
+            <input type="submit" value="Add To Cart" />
+        </form>
 
         @* <p>
         <strong>
