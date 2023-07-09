@@ -21,7 +21,7 @@ namespace StoreFrontApp.DATA.EF.Models
         public int? SeasonId { get; set; }
         public string? ProductImage { get; set; }
 
-        public virtual Category Category { get; set; } = null!;
+        public virtual Category? Category { get; set; }
         public virtual Season? Season { get; set; }
         public virtual ICollection<InventoryToProduct> InventoryToProducts { get; set; }
         public virtual ICollection<OrderProduct> OrderProducts { get; set; }
