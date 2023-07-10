@@ -926,6 +926,35 @@
      text-align: center;
      display: block;
 }
+
+.option_container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.img-box {
+    width: 250px;
+    height: 250px;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-right: 10px;
+}
+.img-box img{
+    width: 100%;
+    height:contain;
+    
+}
  .type-lb{
      position: absolute;
      top: 0px;
