@@ -42,7 +42,7 @@
                         </span>
                 }
 
-                <button class="btn btn-secondary">
+                <button class="btn btn-primary">
                     <a asp-action="Index">Menu List</a>
                 </button>
 
@@ -51,10 +51,12 @@
 
         <div class="row">
             @*
-                Search - Step 1
-                - Add the <form>
-                - Add the <input> textbox
-                - Add the <input> submit
+            Implementing Server-Side Search
+            1) Add a <form>
+            2) Add an <input type="text"> to the <form>
+            3) Add an <input type="submit"> to the <form>
+            4) Add an if() to display the number of results and search term
+            5) Add search logic to the Controller Action
             *@
 
             <div class="offset-3 col-sm-6">
@@ -74,9 +76,8 @@
                         The 'name' attribute of this textbox MUST match the parameter name in the TiledProducts() action
                     *@
                     <input type="text" name="searchTerm" placeholder="Search products" class="form-control text-center" value="@ViewBag.SearchTerm" />
-                    <div class="align-content-center">
-                        <input type="submit" value="Apply Filters" class="btn btn-primary text-center w-50 d-block" />
-                    </div>
+                    <input type="submit" value="Apply Filters" class="btn btn-primary text-center w-50 d-block offset-3" />
+
                 </form>
 
                 @if (ViewBag.NbrResults != null)
@@ -93,29 +94,32 @@
                 <div class="col-sm-6 col-md-4 col-lg-4">
                     <div class="box">
                         <div class="option_container">
+                            <div class="img-box">
+                                <img src="~/images/@item.ProductImage" alt="@item.ProductName" longdesc="@item.ProductDescription" />
+                            </div>
+                            <div class="mx-4 my-4">
+                                <h4>
+                                @item.ProductName
+                                </h4>
+                                <h6>
+                                @Html.DisplayFor(modelItem => item.ProductPrice)
+                                </h6>
+                                 
+                            </div>
                             <div class="options">
                                 <a asp-action="Details" asp-route-id="@item.ProductId" class="option1">
                                     Details
-                                </a>
+                                </a> | 
                                 <a asp-action="Customize" asp-route-id="@item.ProductId" class="option2">
                                     Customize
                                 </a>
-                                <a asp-action="AddToCart" asp-controller="ShoppingCart" asp-route-id="@item.ProductId" class="option3">
-                                    Add to Cart
-                                </a>
+                                <button class="btn btn-danger">
+                                    <a asp-action="AddToCart" asp-controller="ShoppingCart" asp-route-id="@item.ProductId" class="option3">
+                                        Add to Cart
+                                    </a>
+                                </button>
                             </div>
-                        </div>
-                        <div class="img-box">
-                            <img src="~/images/@item.ProductImage" alt="@item.ProductName" longdesc="@item.ProductDescription" />
-                        </div>
-                        <div class="detail-box">
-                            <h5>
-                            @item.ProductName
-                            </h5>
-                            <h6>
-                            @Html.DisplayFor(modelItem => item.ProductPrice)
-                            </h6>
-                                 
+                            <hr/>
                         </div>
                     </div>
                 </div>
